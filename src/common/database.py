@@ -27,16 +27,12 @@ class Database(object):
             return None
 
     @staticmethod
-    def find_one(connection, table_name, query):
+    def find(connection, table_name, query):
         try:
             cursor = connection.cursor()
             sql_query = f"SELECT * FROM {table_name} WHERE {query};"
             cursor.execute(sql_query)
-            rows = cursor.fetchall()
-
-            # Print or process the results
-            for row in rows:
-                print(row)
+            return cursor.fetchall()
 
         except psycopg2.Error as e:
             print(f"Error executing query: {e}")
@@ -45,14 +41,37 @@ class Database(object):
             if cursor:
                 cursor.close()
 
+
+    def find_by_email(connection, table_name, email):
+        try:
+            cursor = connection.cursor()
+            sql_query = f"SELECT * FROM {table_name} WHERE email LIKE %s;"
+            cursor.execute(sql_query, (f"%{email}%",))
+            return cursor.fetchall()
+
+        except psycopg2.Error as e:
+            print(f"Error executing query: {e}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+
     @staticmethod
     def insert(connection, table_name, data):
         try:
             cursor = connection.cursor()
             columns = ', '.join(data.keys())
-            values = ', '.join([f"'{value}'" for value in data.values()])
-            query = f"INSERT INTO {table_name} ({columns}) VALUES ({values});"
-            cursor.execute(query)
+            placeholders = ', '.join(['%s' for _ in data.values()])
+            query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders});"
+
+            # Extract the values as a tuple to prevent SQL injection
+            values = tuple(data.values())
+
+            # Execute the query with the values as parameters
+            cursor.execute(query, values)
+
+            # Commit the changes
             connection.commit()
 
             print("Data inserted successfully.")
