@@ -1,7 +1,8 @@
 from flask import Flask
+from common.database import initialize
 
 app = Flask(__name__)
-initialize_db(app, db)
+initialize()
 
 
 if __name__ == '__main__':
