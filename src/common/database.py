@@ -41,6 +41,21 @@ class Database(object):
             if cursor:
                 cursor.close()
 
+    @staticmethod
+    def find_all(connection, table_name):
+        try:
+            cursor = connection.cursor()
+            sql_query = f"SELECT * FROM {table_name};"
+            cursor.execute(sql_query)
+            return cursor.fetchall()
+
+        except psycopg2.Error as e:
+            print(f"Error executing query: {e}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
 
     def find_by_email(connection, table_name, email):
         try:
