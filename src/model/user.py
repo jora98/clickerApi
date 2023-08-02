@@ -37,7 +37,7 @@ class User(object):
 
     def json(self):
         return {
-            "id": self._id, #need to change data type of primary key in database
+            "id": self._id,
             "email": self.email,
             "password": self.password
         }

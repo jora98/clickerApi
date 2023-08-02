@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from common.database import Database
 from config.resources import set_resources
+from model.pollution import Pollution
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:8100")

@@ -27,11 +27,25 @@ class Database(object):
             return None
 
     @staticmethod
-    def find(connection, table_name, query):
+    def find_by_id(connection, table_name, query):
         try:
             cursor = connection.cursor()
             sql_query = f"SELECT * FROM {table_name} WHERE {query};"
             cursor.execute(sql_query)
+            return cursor.fetchall()
+
+        except psycopg2.Error as e:
+            print(f"Error executing query: {e}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    def find(connection, table_name, query, parameter):
+        try:
+            cursor = connection.cursor()
+            sql_query = f"SELECT * FROM {table_name} {query}"
+            cursor.execute(sql_query, parameter)
             return cursor.fetchall()
 
         except psycopg2.Error as e:
