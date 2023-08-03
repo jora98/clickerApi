@@ -5,9 +5,16 @@ from common.database import Database
 #TO DO !!! change service to the correct model
 
 class Pollution(Resource):
-    def get(self):
-        pollution =  Database.find_all(Database.connection, "public.pollution")
+
+    @staticmethod
+    def get(geoarea_fk: int):
+        print("geoarea_fk" + str(geoarea_fk))
+        pollution =  Database.find_by_id(Database.connection, "public.pollution", f"geoarea_fk = {geoarea_fk}")
+        print(pollution)
+        
         return Pollution.json(pollution)
+    
+
     
     @staticmethod   
     def json(_pollution):
@@ -15,12 +22,10 @@ class Pollution(Resource):
         for item in _pollution:
             json_item = {
                 'id': item[0],
-                'Zigarettenstummel': item[1],
-                'Essensreste': [2],
-                'Drogenabfälle': [3],
-                'Tierische Verschmutzung': item[4],
-                'Pflanzliche Verschmutzung': item[5],
-                'geoarea_fk': item[6]
+                'name': item[1],
+                'count': [2],
+                'description': [3],
+                'geoarea_fk': item[4]
             }
             json_data.append(json_item)
 

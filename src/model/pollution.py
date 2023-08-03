@@ -16,9 +16,6 @@ class Pollution(object):
     
     @staticmethod
     def create_pollution(name, count, description, geoarea_fk):
-        """
-        TO DO !!!
-        """
         pollution_data = Database.find(Database.connection, "public.pollution", "where name = %s and geoarea_fk = %s", (name, geoarea_fk))
         
         if len(pollution_data) != 0:
