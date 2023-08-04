@@ -8,13 +8,9 @@ class Pollution(Resource):
 
     @staticmethod
     def get(geoarea_fk: int):
-        print("geoarea_fk" + str(geoarea_fk))
         pollution =  Database.find_by_id(Database.connection, "public.pollution", f"geoarea_fk = {geoarea_fk}")
-        print(pollution)
         
         return Pollution.json(pollution)
-    
-
     
     @staticmethod   
     def json(_pollution):
