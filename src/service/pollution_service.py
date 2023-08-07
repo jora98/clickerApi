@@ -2,8 +2,6 @@ from sre_parse import TYPE_FLAGS
 from flask_restful import Resource
 from common.database import Database
 
-#TO DO !!! change service to the correct model
-
 class Pollution(Resource):
 
     @staticmethod
