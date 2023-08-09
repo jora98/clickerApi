@@ -1,13 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from common.database import Database
+from common.database import db
+from config.database import initialize_db
 from config.resources import set_resources
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:8100")
-app.config['JWT_SECRET_KEY'] = '123'
-Database.initialize("clicker")
+initialize_db(app, db)
 set_resources(app)
 
 

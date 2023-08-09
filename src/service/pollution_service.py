@@ -1,25 +1,21 @@
-from sre_parse import TYPE_FLAGS
 from flask_restful import Resource
-from common.database import Database
+from model.pollution import Pollution
 
-class Pollution(Resource):
-
-    @staticmethod
-    def get(geoarea_fk: int):
-        pollution =  Database.find_by_id(Database.connection, "public.pollution", f"geoarea_fk = {geoarea_fk}")
-        
-        return Pollution.json(pollution)
+class Pollutions(Resource):
+    def get(self, geoarea_fk: int):
+        pollution = Pollution.query.filter_by(geoarea_fk=geoarea_fk).all()
+        return Pollutions.json(pollution)
     
     @staticmethod   
     def json(_pollution):
         json_data = []
-        for item in _pollution:
+        for pollution in _pollution:
             json_item = {
-                'id': item[0],
-                'name': item[1],
-                'count': [2],
-                'description': [3],
-                'geoarea_fk': item[4]
+                'id': pollution.id,
+                'name': pollution.name,
+                'count': pollution.count,
+                'description': pollution.description,
+                'geoarea_fk': pollution.geoarea_fk
             }
             json_data.append(json_item)
 

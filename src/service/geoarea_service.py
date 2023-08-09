@@ -1,31 +1,26 @@
-from sre_parse import TYPE_FLAGS
 from flask_restful import Resource
-from common.database import Database
-from datetime  import datetime, time
-
+from model.geoarea import GeoArea
 
 class GeoAreas(Resource):
     def get(self):
-        geoareas =  Database.find_all(Database.connection, "public.geoarea")
+        geoareas = GeoArea.query.all()
         return GeoAreas.json(geoareas)
-        
         
     @staticmethod   
     def json(_geoareas):
         json_data = []
-        for item in _geoareas:
+        for geoarea in _geoareas:
             json_item = {
-                'id': item[0],
-                'datecreated': item[1].isoformat() if isinstance(item[1], time) else None,
-                'language': item[2],
-                'last_update': item[3].isoformat() if isinstance(item[3], datetime) else None,
-                'mandant': item[4],
-                'admincomment': item[5],
-                'automaticsearch': item[6],
-                'name': item[7],
-                'polygon': item[8]
+                'id': geoarea.id,
+                'datecreated': geoarea.datecreated.isoformat() if geoarea.datecreated else None,
+                'language': geoarea.language,
+                'last_update': geoarea.last_update.isoformat() if geoarea.last_update else None,
+                'mandant': geoarea.mandant,
+                'admincomment': geoarea.admincomment,
+                'automaticsearch': geoarea.automaticsearch,
+                'name': geoarea.name,
+                'polygon': geoarea.polygon
             }
             json_data.append(json_item)
 
         return json_data
-

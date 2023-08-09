@@ -1,45 +1,32 @@
-from common.database import Database
+from flask_sqlalchemy import SQLAlchemy
 from common.utils import Utils
 import model.errors as UserError
+from common.database import db
 import uuid
 
-class User(object):
-    def __init__(self, email, password, _id=None):
-        self.email = email,
-        self.password = password,
-        self._id = uuid.uuid4().hex if _id is None else _id
+class User(db.Model):
+    id = db.Column(db.String(32), primary_key=True, unique=True, nullable=False, default=lambda: uuid.uuid4().hex)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+
+    def __init__(self, email, password):
+        self.email = email
+        self.password = Utils.hash_password(password)
 
     def __repr__(self) -> str:
         return f"User {self.email}"
-    
+
     @staticmethod
     def register_user(email, password):
-        """
-        This method registers a user using e-mail and password.
-        The password already comes hashed as sha-512
-        :param email: users e-mail (might be invalid)
-        :param pasword: A sha512-hashed password
-        :return: True if registered succesfully, or False otherwise (exceptions can also be raised)
-        """
-        user_data = Database.find_by_email(Database.connection, "public.user", email)
-
-        if len(user_data) != 0:
+        # Check if the user already exists and validate the email
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
             raise UserError.UserAlreadyRegisteredError("The e-mail you used to register already exists.")
         if not Utils.email_is_valid(email):
             raise UserError.InvalidEmailError("The e-mail does not have the right format.")
 
-        User(email, Utils.hash_password(password)).save_to_db()
+        new_user = User(email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
 
-        return True
-    
-    def save_to_db(self):
-        Database.insert(Database.connection, "public.user", self.json())
-
-    def json(self):
-        return {
-            "id": self._id,
-            "email": self.email,
-            "password": self.password
-        }
-
-    
+        return new_user
