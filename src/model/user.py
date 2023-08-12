@@ -28,5 +28,3 @@ class User(db.Model):
         new_user = User(email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
-
-        return new_user
