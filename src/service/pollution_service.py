@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse
 from model.pollution import Pollution
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from common.database import db
+
 class Pollutions(Resource):
     def get(self, geoarea_fk: int):
         pollution = Pollution.query.filter_by(geoarea_fk=geoarea_fk).all()
@@ -22,19 +23,40 @@ class Pollutions(Resource):
 
         return json_data
 
-class PollutionItem(Resource):
+class PollutionCount(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('count', type=int, required=True, help="Count field is required")
 
     @jwt_required()
     def put(self, pollution_id: str):
-        data = PollutionItem.parser.parse_args()
+        data = PollutionCount.parser.parse_args()
         pollution = Pollution.query.get(pollution_id)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
 
         pollution.count = data['count']
+
+        try:
+            db.session.commit()  # Commit the changes to the database
+            return {"message": "Pollution updated successfully"}, 200
+        except Exception as e:
+            db.session.rollback()  # Rollback changes in case of an error
+            return {"message": "An error occurred while updating pollution"}, 500
+        
+class PollutionDescription(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('description', type=str, required=True, help="Description field is required")
+
+    @jwt_required()
+    def put(self, pollution_id: str):
+        data = PollutionDescription.parser.parse_args()
+        pollution = Pollution.query.get(pollution_id)
+
+        if not pollution:
+            return {"message": "Pollution not found"}, 404
+
+        pollution.description = data['description']
 
         try:
             db.session.commit()  # Commit the changes to the database

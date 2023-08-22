@@ -15,16 +15,3 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"User {self.email}"
-
-    @staticmethod
-    def register_user(email, password):
-        # Check if the user already exists and validate the email
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            raise UserError.UserAlreadyRegisteredError("The e-mail you used to register already exists.")
-        if not Utils.email_is_valid(email):
-            raise UserError.InvalidEmailError("The e-mail does not have the right format.")
-
-        new_user = User(email=email, password=password)
-        db.session.add(new_user)
-        db.session.commit()
