@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 from model.pollution import Pollution
+from model.geoarea import GeoArea
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from common.database import db
 
@@ -39,7 +40,7 @@ class PollutionCount(Resource):
 
         try:
             db.session.commit()  # Commit the changes to the database
-            return {"message": "Pollution updated successfully"}, 200
+            return {"message": "PollutionCount updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
             return {"message": "An error occurred while updating pollution"}, 500
@@ -60,7 +61,35 @@ class PollutionDescription(Resource):
 
         try:
             db.session.commit()  # Commit the changes to the database
-            return {"message": "Pollution updated successfully"}, 200
+            return {"message": "PollutionDescription updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
             return {"message": "An error occurred while updating pollution"}, 500
+        
+class NewPollution(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True, help="Name field is required")
+    parser.add_argument('description', type=str)
+    parser.add_argument('count', type=int)
+    parser.add_argument('geoarea_fk', type=int, required=True, help="GeoArea foreign key is required")
+
+    @jwt_required()
+    def post(self):
+        data = NewPollution.parser.parse_args()
+
+        geoarea = GeoArea.query.get(data['geoarea_fk'])
+        if not geoarea:
+            return {"message": "GeoArea not found"}, 404
+
+        pollution = Pollution(name=data['name'],
+                            count=data['count'],
+                            description=data['description'],
+                            geoarea_fk=data['geoarea_fk'])
+
+        try:
+            db.session.add(pollution)
+            db.session.commit()
+            return {"message": "New pollution created successfully"}, 201
+        except Exception as e:
+            db.session.rollback()
+            return {"message": "An error occurred while creating new pollution"}, 500
