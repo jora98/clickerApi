@@ -18,8 +18,3 @@ class Pollution(db.Model):
 
     def __repr__(self) -> str:
         return f"Pollution {self.name} with count of {self.count}"
-
-    @staticmethod
-    def create_pollution(name, count, description, geoarea_fk):
-        #TO DO
-        return True

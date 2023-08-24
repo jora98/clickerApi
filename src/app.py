@@ -6,7 +6,7 @@ from config.database import initialize_db
 from config.resources import set_resources
 
 app = Flask(__name__)
-CORS(app, origins="http://localhost:8100")
+CORS(app, origins="*")
 initialize_db(app, db)
 set_resources(app)
 
