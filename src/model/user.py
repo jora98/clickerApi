@@ -1,6 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
 from common.utils import Utils
-import model.errors as UserError
 from common.database import db
 import uuid
 

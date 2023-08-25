@@ -1,13 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
 from common.database import db
 from config.database import initialize_db
 from config.resources import set_resources
+from config.database import MainConfig
 
 app = Flask(__name__)
 CORS(app, origins="*")
-initialize_db(app, db)
+initialize_db(app, db, MainConfig)
 set_resources(app)
 
 

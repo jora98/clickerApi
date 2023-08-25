@@ -1,5 +1,17 @@
-def initialize_db(_app, _db):
-    _app.config['JWT_SECRET_KEY'] = '123'
-    _app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:!C0mplex@localhost/clicker'
-    _app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from flask import Config
+
+class MainConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:!C0mplex@localhost/clicker'
+    JWT_SECRET_KEY = '123'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+
+def initialize_db(_app, _db, config):
+    _app.config.from_object(config)
     _db.init_app(_app)
+
+
+
