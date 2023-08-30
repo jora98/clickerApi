@@ -7,7 +7,7 @@ class MainConfig(Config):
 
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///C:\\temp\\sqlite_test.db'
 
 def initialize_db(_app, _db, config):
     _app.config.from_object(config)

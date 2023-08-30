@@ -1,6 +1,10 @@
 from common.database import db
+from sqlalchemy.ext.declarative import declarative_base
+from geoalchemy2.types import Geometry
 
-class GeoArea(db.Model):
+Base = declarative_base()
+
+class GeoArea(db.Model, Base):
     __tablename__ = 'geoarea'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -11,5 +15,5 @@ class GeoArea(db.Model):
     admincomment = db.Column(db.String)
     automaticsearch = db.Column(db.Boolean)
     name = db.Column(db.String(100))
-    polygon = db.Column(db.String)
+    polygon = db.Column(Geometry(geometry_type='POLYGON'))
 
