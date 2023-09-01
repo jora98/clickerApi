@@ -6,7 +6,6 @@ from model.pollution import Pollution
 from config.database import TestConfig
 from datetime import datetime
 from model.geoarea import Base
-from geoalchemy2 import WKTElement
 
 class TestAPIEndpoints(unittest.TestCase):
     def setUp(self):
@@ -18,15 +17,16 @@ class TestAPIEndpoints(unittest.TestCase):
         
         # Create the tables using the application context
         with self.app_context:
-            Base.metadata.create_all(bind=test_db.engine)
+            Base.metadata.create_all(bind=test_db.engine) #TODO works with Base, but then there is an error with the PollutionUpdate because GeoAre is used for a query !!!
 
-    def tearDown(self):
-        # Drop the tables using the application context
-        with self.app_context:
-            test_db.session.remove()
-            test_db.drop_all()
         
-        self.app_context.pop()
+    # def tearDown(self):
+    #     # Drop the tables using the application context
+    #     with self.app_context:
+    #         test_db.session.remove()
+    #         test_db.drop_all()
+        
+    #     self.app_context.pop()
 
     def test_get_geoareas(self):
         # Insert test data into the database
@@ -39,7 +39,7 @@ class TestAPIEndpoints(unittest.TestCase):
         mandant='Mandant A',
         admincomment='Comment 1',
         automaticsearch=True,
-        polygon=WKTElement("POLYGON((x1 y1, x2 y2, x3 y3, x4 y4, x1 y1))", srid=4326)
+        polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
         geoarea2 = GeoArea(
@@ -51,7 +51,7 @@ class TestAPIEndpoints(unittest.TestCase):
             mandant='Mandant B',
             admincomment='Comment 2',
             automaticsearch=False,
-            polygon=WKTElement("POLYGON((x1 y1, x2 y2, x3 y3, x4 y4, x1 y1))", srid=4326)
+            polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
         test_db.session.add_all([geoarea1, geoarea2])

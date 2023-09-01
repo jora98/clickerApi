@@ -7,7 +7,7 @@ class MainConfig(Config):
 
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///C:\\temp\\sqlite_test.db'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:!C0mplex@localhost/test'
 
 def initialize_db(_app, _db, config):
     _app.config.from_object(config)

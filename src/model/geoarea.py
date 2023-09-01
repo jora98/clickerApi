@@ -4,7 +4,9 @@ from geoalchemy2.types import Geometry
 
 Base = declarative_base()
 
-class GeoArea(db.Model, Base):
+#TODO find out if Base or Model is needed !!!
+
+class GeoArea(Base, db.Model):
     __tablename__ = 'geoarea'
 
     id = db.Column(db.Integer, primary_key=True)
