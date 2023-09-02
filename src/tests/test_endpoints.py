@@ -7,7 +7,6 @@ from model.pollution import Pollution
 from config.database import TestConfig
 from datetime import datetime, timedelta
 import warnings
-from model.geoarea import Base
 
 class TestAPIEndpoints(unittest.TestCase):
     def setUp(self):
@@ -23,15 +22,15 @@ class TestAPIEndpoints(unittest.TestCase):
         
         # Create the tables using the application context
         with self.test_app.app_context():
-            Base.metadata.create_all(bind=db.engine)
             db.create_all()
         
     def tearDown(self):
         # Drop the tables using the application context
-        with self.app_context:
+        with self.test_app.app_context():
             print("tearDown")
-            db.session.remove()
+            db.session.close_all()
             db.drop_all()
+
         
         self.app_context.pop()
 
@@ -102,19 +101,32 @@ class TestAPIEndpoints(unittest.TestCase):
     
     def test_get_pollutions(self):
         # Insert test data into the database
+        geoarea1 = GeoArea(
+        id=1,
+        name='Area 1',
+        datecreated=datetime.strptime('2023-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'),
+        language='German',
+        last_update=datetime.strptime('2023-08-25 00:00:00', '%Y-%m-%d %H:%M:%S'),
+        mandant='Mandant A',
+        admincomment='Comment 1',
+        automaticsearch=True,
+        polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
+        )
+
         pollution1 = Pollution(
             name='Pollution 1',
             count=10,
             description='Description 1',
             geoarea_fk=1
         )
+
         pollution2 = Pollution(
             name='Pollution 2',
             count=5,
             description='Description 2',
             geoarea_fk=1
         )
-        db.session.add_all([pollution1, pollution2])
+        db.session.add_all([geoarea1, pollution1, pollution2])
         db.session.commit()
 
         # Send a GET request to the /pollution/byGeoarea_fk/<geoarea_fk> endpoint

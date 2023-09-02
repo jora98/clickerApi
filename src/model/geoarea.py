@@ -1,8 +1,7 @@
-from common.database import db, test_db
-from config.database import Base
+from common.database import db
 from geoalchemy2.types import Geometry
 
-class GeoArea(Base):
+class GeoArea(db.Model):
     __tablename__ = 'geoarea'
 
     id = db.Column(db.Integer, primary_key=True)

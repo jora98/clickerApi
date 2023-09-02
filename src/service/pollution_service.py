@@ -6,7 +6,7 @@ from common.database import db
 
 class Pollutions(Resource):
     def get(self, geoarea_fk: int):
-        pollution = db.session.query(Pollution).filter_by(geoarea_fk=geoarea_fk).all()
+        pollution = Pollution.query.filter_by(geoarea_fk=geoarea_fk).all()
         return Pollutions.json(pollution)
     
     @staticmethod   
@@ -31,7 +31,7 @@ class PollutionCount(Resource):
     @jwt_required()
     def put(self, pollution_id: str):
         data = PollutionCount.parser.parse_args()
-        pollution = db.session.query(Pollution).get(pollution_id)
+        pollution = Pollution.query.get(pollution_id)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
@@ -52,7 +52,7 @@ class PollutionDescription(Resource):
     @jwt_required()
     def put(self, pollution_id: str):
         data = PollutionDescription.parser.parse_args()
-        pollution = db.session.query(Pollution).get(pollution_id)
+        pollution = Pollution.query.get(pollution_id)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
