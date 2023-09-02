@@ -21,5 +21,8 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
+    - name: change directory to src
+      run: cd src
+
     - name: Run unittests
       run: python -m unittest discover tests
