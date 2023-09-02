@@ -7,4 +7,3 @@ GeoAlchemy2==0.14.1
 passlib==1.7.4
 Shapely==2.0.1
 SQLAlchemy==1.4.23
-SQLAlchemy==2.0.19
