@@ -9,6 +9,7 @@ class MainConfig(Config):
 
 class TestConfig(Config):
     TESTING = True
+    JWT_SECRET_KEY = '123'
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:!C0mplex@localhost/test'
 
 def initialize_db(_app, _db, config):

@@ -43,7 +43,6 @@ class PollutionCount(Resource):
             return {"message": "PollutionCount updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
-            print(f"Error: {str(e)}")
             return {"message": "An error occurred while updating pollution"}, 500
         
 class PollutionDescription(Resource):
@@ -53,7 +52,7 @@ class PollutionDescription(Resource):
     @jwt_required()
     def put(self, pollution_id: str):
         data = PollutionDescription.parser.parse_args()
-        pollution = Pollution.query.get(pollution_id)
+        pollution = db.session.query(Pollution).get(pollution_id)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
