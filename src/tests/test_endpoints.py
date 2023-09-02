@@ -1,18 +1,20 @@
 import unittest
-
 from flask_jwt_extended import create_access_token
 from app import create_app
-from common.database import test_db, db
+from common.database import db
 from model.geoarea import GeoArea
 from model.pollution import Pollution
 from config.database import TestConfig
 from datetime import datetime, timedelta
+import warnings
 from model.geoarea import Base
 
 class TestAPIEndpoints(unittest.TestCase):
     def setUp(self):
         print("start setting up test environment...")
-        # Use the test configuration
+
+        warnings.filterwarnings("ignore")
+
         self.test_app = create_app(TestConfig, db)
         self.app = self.test_app.test_client()
 
@@ -35,7 +37,6 @@ class TestAPIEndpoints(unittest.TestCase):
 
     def test_get_geoareas(self):
         # Insert test data into the database
-        print("start testing geoareas...")
 
         geoarea1 = GeoArea(
         id=1,
