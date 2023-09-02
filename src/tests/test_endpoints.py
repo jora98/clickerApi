@@ -142,7 +142,7 @@ class TestAPIEndpoints(unittest.TestCase):
         # Insert test data into the database
         geoarea = GeoArea(
             id=4,
-            name='Area 1',
+            name='Area 4',
             datecreated='2023-01-01 00:00:00',
             language='German',
             last_update='2023-08-25 00:00:00',
@@ -153,7 +153,7 @@ class TestAPIEndpoints(unittest.TestCase):
             )
 
         pollution = Pollution(
-            name='Pollution',
+            name='PollutionDescription',
             count=10,
             description='Description',
             geoarea_fk=4
@@ -176,6 +176,44 @@ class TestAPIEndpoints(unittest.TestCase):
             updated_pollution = db.session.query(Pollution).get(pollution.id)
             self.assertEqual(updated_pollution.description, 'Updated Description')
 
+
+    def test_update_pollution_count(self):
+        # Insert test data into the database
+        geoarea = GeoArea(
+            id=5,
+            name='Area 5',
+            datecreated='2023-01-01 00:00:00',
+            language='German',
+            last_update='2023-08-25 00:00:00',
+            mandant='Mandant A',
+            admincomment='Comment 1',
+            automaticsearch=True,
+            polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
+            )
+
+        pollution = Pollution(
+            name='PollutionCount',
+            count=10,
+            description='Description',
+            geoarea_fk=5
+        )
+        db.session.add_all([pollution, geoarea])
+        db.session.commit()
+
+        expires = timedelta(days=7)
+        access_token = create_access_token(identity=geoarea.id, expires_delta=expires)
+        self.headers = {'Authorization': f'Bearer {access_token}'}
+
+        # Send a PUT request to the /pollution/pollutionDescription/<pollution_id> endpoint
+        with self.test_app.test_client() as client:
+            response = client.put('/pollution/pollutionCount/' + pollution.id, json={'count': 15}, headers=self.headers)
+
+            # Assert response status code
+            self.assertEqual(response.status_code, 200)
+
+            # Check the updated description in the database
+            updated_pollution = db.session.query(Pollution).get(pollution.id)
+            self.assertEqual(updated_pollution.count, 15)
 
 if __name__ == '__main__':
     unittest.main()
