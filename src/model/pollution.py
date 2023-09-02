@@ -1,10 +1,8 @@
 from common.database import db
+from config.database import Base
 import uuid
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
-
-class Pollution(db.Model, Base):
+class Pollution(Base):
     __tablename__ = 'pollution'
 
     id = db.Column(db.String(32), primary_key=True, unique=True, nullable=False, default=lambda: uuid.uuid4().hex)

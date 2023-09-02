@@ -1,12 +1,8 @@
-from common.database import db
-from sqlalchemy.ext.declarative import declarative_base
+from common.database import db, test_db
+from config.database import Base
 from geoalchemy2.types import Geometry
 
-Base = declarative_base()
-
-#TODO find out if Base or Model is needed !!!
-
-class GeoArea(Base, db.Model):
+class GeoArea(Base):
     __tablename__ = 'geoarea'
 
     id = db.Column(db.Integer, primary_key=True)

@@ -31,7 +31,7 @@ class PollutionCount(Resource):
     @jwt_required()
     def put(self, pollution_id: str):
         data = PollutionCount.parser.parse_args()
-        pollution = Pollution.query.get(pollution_id)
+        pollution = db.session.query(Pollution).get(pollution_id)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
@@ -43,6 +43,7 @@ class PollutionCount(Resource):
             return {"message": "PollutionCount updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
+            print(f"Error: {str(e)}")
             return {"message": "An error occurred while updating pollution"}, 500
         
 class PollutionDescription(Resource):
@@ -77,7 +78,7 @@ class NewPollution(Resource):
     def post(self):
         data = NewPollution.parser.parse_args()
 
-        geoarea = GeoArea.query.get(data['geoarea_fk'])
+        geoarea = db.session.query(GeoArea).get(data['geoarea_fk'])
         if not geoarea:
             return {"message": "GeoArea not found"}, 404
 
