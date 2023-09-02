@@ -1,6 +1,6 @@
 import unittest
 from flask_jwt_extended import create_access_token
-from app import create_app
+from src.app import create_app
 from common.database import db
 from model.geoarea import GeoArea
 from model.pollution import Pollution
