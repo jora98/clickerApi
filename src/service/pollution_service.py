@@ -31,7 +31,7 @@ class PollutionCount(Resource):
     @jwt_required()
     def put(self, pollution_id: str):
         data = PollutionCount.parser.parse_args()
-        pollution = Pollution.query.get(pollution_id)
+        pollution = Pollution.query.get(pollution_id) 
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
