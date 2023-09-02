@@ -21,6 +21,7 @@ class TestAPIEndpoints(unittest.TestCase):
         
         # Create the tables using the application context
         with self.test_app.app_context():
+            Base.metadata.create_all(bind=db.engine)
             db.create_all()
         
     def tearDown(self):
