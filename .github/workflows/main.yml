@@ -13,10 +13,22 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.10.10
+    - name: Herunterladen und Extrahieren der Python-Zip-Datei
+      run: |
+        curl -o python.zip https://www.python.org/ftp/python/3.10.10/python-3.10.10-amd64.exe
+        Expand-Archive -Path python.zip -DestinationPath python
+      shell: PowerShell
+
+    - name: Setzen Sie Python-Umgebungsvariable
+      run: |
+        echo "::set-env name=PYTHONPATH::$(pwd)/python"
+      shell: bash
+
+    - name: Führen Sie Python-Installation aus
+      run: |
+        export PATH="$PATH:$(echo $PYTHONPATH)/Scripts"
+        python --version
+      shell: bash
 
     - name: Install dependencies
       run: pip install -r requirements.txt
