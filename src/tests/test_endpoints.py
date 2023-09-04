@@ -35,8 +35,6 @@ class TestAPIEndpoints(unittest.TestCase):
         self.app_context.pop()
 
     def test_get_geoareas(self):
-        # Insert test data into the database
-
         geoarea1 = GeoArea(
         id=1,
         name='Area 1',
@@ -100,7 +98,6 @@ class TestAPIEndpoints(unittest.TestCase):
             self.assertEqual(response_data[1]['polygon']['coordinates'], [[[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]])
     
     def test_get_pollutions(self):
-        # Insert test data into the database
         geoarea1 = GeoArea(
         id=1,
         name='Area 1',
@@ -129,20 +126,15 @@ class TestAPIEndpoints(unittest.TestCase):
         db.session.add_all([geoarea1, pollution1, pollution2])
         db.session.commit()
 
-        # Send a GET request to the /pollution/byGeoarea_fk/<geoarea_fk> endpoint
         with self.test_app.test_client() as client:
             response = client.get('/pollution/byGeoarea_fk/1')
 
-            # Assert response status code
             self.assertEqual(response.status_code, 200)
 
-            # Parse JSON response data
             response_data = response.get_json()
 
-            # Assert the expected number of pollutions in the response
             self.assertEqual(len(response_data), 2)
 
-            # Assert the expected data for the first pollution
             self.assertEqual(response_data[0]['name'], 'Pollution 1')
             self.assertEqual(response_data[0]['count'], 10)
             self.assertEqual(response_data[0]['description'], 'Description 1')
@@ -151,7 +143,6 @@ class TestAPIEndpoints(unittest.TestCase):
             self.assertEqual(response_data[1]['description'], 'Description 2')
 
     def test_update_pollution_description(self):
-        # Insert test data into the database
         geoarea = GeoArea(
             id=4,
             name='Area 4',
@@ -190,7 +181,6 @@ class TestAPIEndpoints(unittest.TestCase):
 
 
     def test_update_pollution_count(self):
-        # Insert test data into the database
         geoarea = GeoArea(
             id=5,
             name='Area 5',
@@ -216,14 +206,11 @@ class TestAPIEndpoints(unittest.TestCase):
         access_token = create_access_token(identity=geoarea.id, expires_delta=expires)
         self.headers = {'Authorization': f'Bearer {access_token}'}
 
-        # Send a PUT request to the /pollution/pollutionDescription/<pollution_id> endpoint
         with self.test_app.test_client() as client:
             response = client.put('/pollution/pollutionCount/' + pollution.id, json={'count': 15}, headers=self.headers)
 
-            # Assert response status code
             self.assertEqual(response.status_code, 200)
 
-            # Check the updated description in the database
             updated_pollution = db.session.query(Pollution).get(pollution.id)
             self.assertEqual(updated_pollution.count, 15)
 
