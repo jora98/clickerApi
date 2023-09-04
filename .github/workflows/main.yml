@@ -21,5 +21,8 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
+    - name: activate venv
+      run: venv\Scripts\activate
+
     - name: Run unittests
       run: python -m unittest discover -s src/tests -t src
