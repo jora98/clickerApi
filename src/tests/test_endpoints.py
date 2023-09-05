@@ -1,3 +1,4 @@
+from http import HTTPStatus
 import unittest
 from flask_jwt_extended import create_access_token
 from app import create_app
@@ -7,6 +8,7 @@ from model.pollution import Pollution
 from config.database import TestConfig
 from datetime import datetime, timedelta
 import warnings
+from model.user import User
 
 class TestAPIEndpoints(unittest.TestCase):
     def setUp(self):
@@ -213,6 +215,88 @@ class TestAPIEndpoints(unittest.TestCase):
 
             updated_pollution = db.session.query(Pollution).get(pollution.id)
             self.assertEqual(updated_pollution.count, 15)
+
+    
+    def test_create_new_pollution(self):
+        geoarea = GeoArea(
+            id=6,
+            name='Area 6',
+            datecreated='2023-01-01 00:00:00',
+            language='German',
+            last_update='2023-08-25 00:00:00',
+            mandant='Mandant A',
+            admincomment='Comment 1',
+            automaticsearch=True,
+            polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
+        )
+        db.session.add(geoarea)
+        db.session.commit()
+
+        expires = timedelta(days=7)
+        access_token = create_access_token(identity=geoarea.id, expires_delta=expires)
+        self.headers = {'Authorization': f'Bearer {access_token}'}
+
+        # Send a POST request to create a new pollution record
+        with self.test_app.test_client() as client:
+            response = client.post('/pollution/newPollution', json={
+                'name': 'Test Pollution',
+                'description': 'Test Description',
+                'count': 42,
+                'geoarea_fk': 6
+            }, headers=self.headers)
+
+            self.assertEqual(response.status_code, 201)
+
+            # Check if the pollution record is created in the database
+            created_pollution = db.session.query(Pollution).filter_by(name='Test Pollution').first()
+            self.assertIsNotNone(created_pollution)
+            self.assertEqual(created_pollution.name, 'Test Pollution')
+            self.assertEqual(created_pollution.description, 'Test Description')
+            self.assertEqual(created_pollution.count, 42)
+            self.assertEqual(created_pollution.geoarea_fk, 6)
+
+
+    def test_login(self):
+        # Insert a test user into the database
+        test_user = User(email='test@example.com', password='password')
+        db.session.add(test_user)
+        db.session.commit()
+
+        # Send a POST request to the /login endpoint
+        with self.test_app.test_client() as client:
+            response = client.post('/login', json={
+                'email': 'test@example.com',
+                'password': 'password'
+            })
+            
+            # Assert response status code
+            self.assertEqual(response.status_code, HTTPStatus.OK)
+
+            # Assert that the response contains a token
+            response_data = response.get_json()
+            self.assertIn('token', response_data)
+
+
+    def test_register(self):
+        # Send a POST request to the /register endpoint to create a new user
+        with self.test_app.test_client() as client:
+            response = client.post('/register', json={
+                'email': 'newuser@example.com',
+                'password': 'newpassword'
+            })
+
+            # Assert response status code
+            self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+            # Assert that the response contains a token
+            response_data = response.get_json()
+            self.assertIn('token', response_data)
+
+            # Assert that the user is created in the database
+            new_user = User.query.filter_by(email='newuser@example.com').first()
+            self.assertIsNotNone(new_user)
+
+
 
 if __name__ == '__main__':
     unittest.main()
