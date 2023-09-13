@@ -93,3 +93,21 @@ class NewPollution(Resource):
         except Exception as e:
             db.session.rollback()
             return {"message": "An error occurred while creating new pollution"}, 500
+        
+class DeletePollution(Resource):
+
+    @jwt_required()
+    def delete(self, pollution_id: str):
+        pollution = Pollution.query.get(pollution_id)
+        print(pollution)
+
+        if not pollution:
+            return {"message": "Pollution not found"}, 404
+
+        try:
+            db.session.delete(pollution)
+            db.session.commit()  # Commit the changes to the database
+            return {"message": "PollutionDescription updated successfully"}, 200
+        except Exception as e:
+            db.session.rollback()  # Rollback changes in case of an error
+            return {"message": "An error occurred while updating pollution"}, 500

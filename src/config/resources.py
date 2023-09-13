@@ -1,7 +1,7 @@
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from service.geoarea_service import GeoAreas
-from service.pollution_service import Pollutions, PollutionCount, PollutionDescription, NewPollution
+from service.pollution_service import Pollutions, PollutionCount, PollutionDescription, NewPollution, DeletePollution
 from service.auth_service import Login
 from service.auth_service import Register
 
@@ -14,5 +14,6 @@ def set_resources(_app):
     api.add_resource(PollutionCount, '/pollution/pollutionCount/<pollution_id>')
     api.add_resource(PollutionDescription, '/pollution/pollutionDescription/<pollution_id>')
     api.add_resource(NewPollution, '/pollution/newPollution')
+    api.add_resource(DeletePollution, '/pollution/deletePollution/<pollution_id>')
     api.add_resource(Login, '/login')
     api.add_resource(Register, '/register')
