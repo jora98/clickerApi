@@ -196,7 +196,7 @@ class TestAPIEndpoints(unittest.TestCase):
             )
 
         pollution = Pollution(
-            name='PollutionCount',
+            name='PollutionDelete',
             count=10,
             description='Description',
             geoarea_fk=5
@@ -256,6 +256,45 @@ class TestAPIEndpoints(unittest.TestCase):
             self.assertEqual(created_pollution.geoarea_fk, 6)
 
 
+    def test_delete_Pollution(self):
+        # Insert a test pollution and a test geoarea
+        geoarea = GeoArea(
+            id=7,
+            name='Area 7',
+            datecreated='2023-01-01 00:00:00',
+            language='German',
+            last_update='2023-08-25 00:00:00',
+            mandant='Mandant A',
+            admincomment='Comment 1',
+            automaticsearch=True,
+            polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
+            )
+
+        pollution = Pollution(
+            name='PollutionCount',
+            count=10,
+            description='Description',
+            geoarea_fk=7
+        )
+        db.session.add_all([pollution, geoarea])
+        db.session.commit()
+        
+        expires = timedelta(days=7)
+        access_token = create_access_token(identity=geoarea.id, expires_delta=expires)
+        self.headers = {'Authorization': f'Bearer {access_token}'}
+
+        #Send a DELETE request to the /deletePollution endpoint
+        with self.test_app.test_client() as client:
+            response = client.delete('/pollution/deletePollution' + pollution.id, headers=self.headers)
+
+            # Assert response status code
+            self.assertEqual(response.status_code, HTTPStatus.OK)
+        
+            # Assert that the response contains a token
+            response_data = response.get_json()
+            self.assertIn('token', response_data)
+        
+
     def test_login(self):
         # Insert a test user into the database
         test_user = User(email='test@example.com', password='password')
@@ -295,7 +334,7 @@ class TestAPIEndpoints(unittest.TestCase):
             # Assert that the user is created in the database
             new_user = User.query.filter_by(email='newuser@example.com').first()
             self.assertIsNotNone(new_user)
-
+            
 
 
 if __name__ == '__main__':
