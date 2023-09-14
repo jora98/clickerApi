@@ -271,7 +271,7 @@ class TestAPIEndpoints(unittest.TestCase):
             )
 
         pollution = Pollution(
-            name='PollutionCount',
+            name='PollutionDelete',
             count=10,
             description='Description',
             geoarea_fk=7
@@ -285,14 +285,10 @@ class TestAPIEndpoints(unittest.TestCase):
 
         #Send a DELETE request to the /deletePollution endpoint
         with self.test_app.test_client() as client:
-            response = client.delete('/pollution/deletePollution' + pollution.id, headers=self.headers)
+            response = client.delete('/pollution/deletePollution/' + pollution.id, headers=self.headers)
 
             # Assert response status code
-            self.assertEqual(response.status_code, HTTPStatus.OK)
-        
-            # Assert that the response contains a token
-            response_data = response.get_json()
-            self.assertIn('token', response_data)
+            self.assertEqual(response.status_code, 200)
         
 
     def test_login(self):
