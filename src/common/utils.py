@@ -1,29 +1,25 @@
-from passlib.hash import pbkdf2_sha512
-import re
+"""
+Utility methods for validation, password hashing, and verification.
+"""
 
-class Utils(object):
+import re
+from passlib.hash import pbkdf2_sha512
+
+class Utils():
+    """Utility methods."""
 
     @staticmethod
     def email_is_valid(email):
-        email_address_matcher = re.compile("^[\w-]+@([\w-]+\.)+[\w]+$")
-        return True if email_address_matcher.match(email) else False
+        """Check if the provided email has a valid format."""
+        email_address_matcher = re.compile(r"^[\w-]+@([\w-]+\.)+[\w]+$")
+        return bool(email_address_matcher.match(email))
 
     @staticmethod
     def hash_password(password):
-         """
-         Hashes a password using pbkf2_sha512
-        :param password: sha512 password from the Login/register form
-        :return: A sha512->pbkf2_sha512 encrypted password
-        """
-         return pbkdf2_sha512.encrypt(password)
+        """Return a pbkf2_sha512 encrypted password."""
+        return pbkdf2_sha512.encrypt(password)
 
     @staticmethod
     def check_hashed_password(password, hashed_password):
-        """
-        Checks that the password the user sent matches that of the database.
-        The database password is encrypted more than the user's password at this stage.
-        :param password: sha512-hashed password
-        :param hashed_password: pbkdf2_sha512 encrypted password
-        :return: True if passwords match, False otherwise
-        """
+        """Verify if the hashed password matches the provided password."""
         return pbkdf2_sha512.verify(password, hashed_password)

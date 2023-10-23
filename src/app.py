@@ -5,6 +5,7 @@ from config.database import initialize_db
 from config.resources import set_resources
 from config.database import MainConfig
 
+
 def create_app(config_class=MainConfig, db=db):
     app = Flask(__name__)
     CORS(app, origins="*")

@@ -1,4 +1,5 @@
 from http import HTTPStatus
+import warnings
 import unittest
 from flask_jwt_extended import create_access_token
 from app import create_app
@@ -7,7 +8,6 @@ from model.geoarea import GeoArea
 from model.pollution import Pollution
 from config.database import TestConfig
 from datetime import datetime, timedelta
-import warnings
 from model.user import User
 
 class TestAPIEndpoints(unittest.TestCase):
@@ -21,11 +21,11 @@ class TestAPIEndpoints(unittest.TestCase):
 
         self.app_context = self.test_app.app_context()
         self.app_context.push()
-        
+
         # Create the tables using the application context
         with self.test_app.app_context():
             db.create_all()
-        
+
     def tearDown(self):
         # Drop the tables using the application context
         with self.test_app.app_context():
@@ -33,20 +33,19 @@ class TestAPIEndpoints(unittest.TestCase):
             db.session.close_all()
             db.drop_all()
 
-        
         self.app_context.pop()
 
     def test_get_geoareas(self):
         geoarea1 = GeoArea(
-        id=1,
-        name='Area 1',
-        datecreated=datetime.strptime('2023-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'),
-        language='German',
-        last_update=datetime.strptime('2023-08-25 00:00:00', '%Y-%m-%d %H:%M:%S'),
-        mandant='Mandant A',
-        admincomment='Comment 1',
-        automaticsearch=True,
-        polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
+            id=1,
+            name='Area 1',
+            datecreated=datetime.strptime('2023-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'),
+            language='German',
+            last_update=datetime.strptime('2023-08-25 00:00:00', '%Y-%m-%d %H:%M:%S'),
+            mandant='Mandant A',
+            admincomment='Comment 1',
+            automaticsearch=True,
+            polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
         geoarea2 = GeoArea(
@@ -86,7 +85,8 @@ class TestAPIEndpoints(unittest.TestCase):
             self.assertEqual(response_data[0]['mandant'], 'Mandant A')
             self.assertEqual(response_data[0]['admincomment'], 'Comment 1')
             self.assertEqual(response_data[0]['automaticsearch'], True)
-            self.assertEqual(response_data[0]['polygon']['coordinates'], [[[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]])
+            self.assertEqual(response_data[0]['polygon']['coordinates'],
+                             [[[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]])
 
             # Assert the expected data for the second geoarea
             self.assertEqual(response_data[1]['id'], 2)
@@ -97,19 +97,20 @@ class TestAPIEndpoints(unittest.TestCase):
             self.assertEqual(response_data[1]['mandant'], 'Mandant B')
             self.assertEqual(response_data[1]['admincomment'], 'Comment 2')
             self.assertEqual(response_data[1]['automaticsearch'], False)
-            self.assertEqual(response_data[1]['polygon']['coordinates'], [[[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]])
-    
+            self.assertEqual(response_data[1]['polygon']['coordinates'],
+                             [[[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [5.0, 6.0], [1.0, 2.0]]])
+
     def test_get_pollutions(self):
         geoarea1 = GeoArea(
-        id=1,
-        name='Area 1',
-        datecreated=datetime.strptime('2023-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'),
-        language='German',
-        last_update=datetime.strptime('2023-08-25 00:00:00', '%Y-%m-%d %H:%M:%S'),
-        mandant='Mandant A',
-        admincomment='Comment 1',
-        automaticsearch=True,
-        polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
+            id=1,
+            name='Area 1',
+            datecreated=datetime.strptime('2023-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'),
+            language='German',
+            last_update=datetime.strptime('2023-08-25 00:00:00', '%Y-%m-%d %H:%M:%S'),
+            mandant='Mandant A',
+            admincomment='Comment 1',
+            automaticsearch=True,
+            polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
         pollution1 = Pollution(
@@ -155,7 +156,7 @@ class TestAPIEndpoints(unittest.TestCase):
             admincomment='Comment 1',
             automaticsearch=True,
             polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
-            )
+        )
 
         pollution = Pollution(
             name='PollutionDescription',
@@ -172,7 +173,8 @@ class TestAPIEndpoints(unittest.TestCase):
 
         # Send a PUT request to the /pollution/pollutionDescription/<pollution_id> endpoint
         with self.test_app.test_client() as client:
-            response = client.put('/pollution/pollutionDescription/' + pollution.id, json={'description': 'Updated Description'}, headers=self.headers)
+            response = client.put('/pollution/pollutionDescription/' + pollution.id,
+                                  json={'description': 'Updated Description'}, headers=self.headers)
 
             # Assert response status code
             self.assertEqual(response.status_code, 200)
@@ -180,7 +182,6 @@ class TestAPIEndpoints(unittest.TestCase):
             # Check the updated description in the database
             updated_pollution = db.session.query(Pollution).get(pollution.id)
             self.assertEqual(updated_pollution.description, 'Updated Description')
-
 
     def test_update_pollution_count(self):
         geoarea = GeoArea(
@@ -193,7 +194,7 @@ class TestAPIEndpoints(unittest.TestCase):
             admincomment='Comment 1',
             automaticsearch=True,
             polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
-            )
+        )
 
         pollution = Pollution(
             name='PollutionDelete',
@@ -209,14 +210,14 @@ class TestAPIEndpoints(unittest.TestCase):
         self.headers = {'Authorization': f'Bearer {access_token}'}
 
         with self.test_app.test_client() as client:
-            response = client.put('/pollution/pollutionCount/' + pollution.id, json={'count': 15}, headers=self.headers)
+            response = client.put('/pollution/pollutionCount/' + pollution.id,
+                                  json={'count': 15}, headers=self.headers)
 
             self.assertEqual(response.status_code, 200)
 
             updated_pollution = db.session.query(Pollution).get(pollution.id)
             self.assertEqual(updated_pollution.count, 15)
 
-    
     def test_create_new_pollution(self):
         geoarea = GeoArea(
             id=6,
@@ -255,7 +256,6 @@ class TestAPIEndpoints(unittest.TestCase):
             self.assertEqual(created_pollution.count, 42)
             self.assertEqual(created_pollution.geoarea_fk, 6)
 
-
     def test_delete_Pollution(self):
         # Insert a test pollution and a test geoarea
         geoarea = GeoArea(
@@ -268,7 +268,7 @@ class TestAPIEndpoints(unittest.TestCase):
             admincomment='Comment 1',
             automaticsearch=True,
             polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
-            )
+        )
 
         pollution = Pollution(
             name='PollutionDelete',
@@ -278,18 +278,18 @@ class TestAPIEndpoints(unittest.TestCase):
         )
         db.session.add_all([pollution, geoarea])
         db.session.commit()
-        
+
         expires = timedelta(days=7)
         access_token = create_access_token(identity=geoarea.id, expires_delta=expires)
         self.headers = {'Authorization': f'Bearer {access_token}'}
 
-        #Send a DELETE request to the /deletePollution endpoint
+        # Send a DELETE request to the /deletePollution endpoint
         with self.test_app.test_client() as client:
-            response = client.delete('/pollution/deletePollution/' + pollution.id, headers=self.headers)
+            response = client.delete('/pollution/deletePollution/' + pollution.id,
+                                     headers=self.headers)
 
             # Assert response status code
             self.assertEqual(response.status_code, 200)
-        
 
     def test_login(self):
         # Insert a test user into the database
@@ -303,14 +303,13 @@ class TestAPIEndpoints(unittest.TestCase):
                 'email': 'test@example.com',
                 'password': 'password'
             })
-            
+
             # Assert response status code
             self.assertEqual(response.status_code, HTTPStatus.OK)
 
             # Assert that the response contains a token
             response_data = response.get_json()
             self.assertIn('token', response_data)
-
 
     def test_register(self):
         # Send a POST request to the /register endpoint to create a new user
@@ -330,7 +329,6 @@ class TestAPIEndpoints(unittest.TestCase):
             # Assert that the user is created in the database
             new_user = User.query.filter_by(email='newuser@example.com').first()
             self.assertIsNotNone(new_user)
-            
 
 
 if __name__ == '__main__':

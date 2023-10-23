@@ -1,15 +1,15 @@
 from flask_restful import Resource, reqparse
-from model.pollution import Pollution
-from model.geoarea import GeoArea
 from flask_jwt_extended import jwt_required
 from common.database import db
+from model.pollution import Pollution
+from model.geoarea import GeoArea
 
 class Pollutions(Resource):
     def get(self, geoarea_fk: int):
         pollution = Pollution.query.filter_by(geoarea_fk=geoarea_fk).all()
         return Pollutions.json(pollution)
-    
-    @staticmethod   
+
+    @staticmethod
     def json(_pollution):
         json_data = []
         for pollution in _pollution:
@@ -31,7 +31,7 @@ class PollutionCount(Resource):
     @jwt_required()
     def put(self, pollution_id: str):
         data = PollutionCount.parser.parse_args()
-        pollution = Pollution.query.get(pollution_id) 
+        pollution = Pollution.query.get(pollution_id)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
@@ -43,11 +43,12 @@ class PollutionCount(Resource):
             return {"message": "PollutionCount updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
-            return {"message": "An error occurred while updating pollution"}, 500
-        
+            return {"message": f"An error occurred while updating pollution: {str(e)}"}, 500
+
 class PollutionDescription(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('description', type=str, required=True, help="Description field is required")
+    parser.add_argument('description', type=str, required=True,
+                        help="Description field is required")
 
     @jwt_required()
     def put(self, pollution_id: str):
@@ -64,14 +65,15 @@ class PollutionDescription(Resource):
             return {"message": "PollutionDescription updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
-            return {"message": "An error occurred while updating pollution"}, 500
-        
+            return {"message": f"An error occurred while updating pollution: {str(e)}"}, 500
+
 class NewPollution(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True, help="Name field is required")
     parser.add_argument('description', type=str)
     parser.add_argument('count', type=int)
-    parser.add_argument('geoarea_fk', type=int, required=True, help="GeoArea foreign key is required")
+    parser.add_argument('geoarea_fk', type=int, required=True,
+                        help="GeoArea foreign key is required")
 
     @jwt_required()
     def post(self):
@@ -82,9 +84,9 @@ class NewPollution(Resource):
             return {"message": "GeoArea not found"}, 404
 
         pollution = Pollution(name=data['name'],
-                            count=data['count'],
-                            description=data['description'],
-                            geoarea_fk=data['geoarea_fk'])
+                              count=data['count'],
+                              description=data['description'],
+                              geoarea_fk=data['geoarea_fk'])
 
         try:
             db.session.add(pollution)
@@ -92,8 +94,8 @@ class NewPollution(Resource):
             return {"message": "New pollution created successfully"}, 201
         except Exception as e:
             db.session.rollback()
-            return {"message": "An error occurred while creating new pollution"}, 500
-        
+            return {"message": f"An error occurred while creating new pollution: {str(e)}"}, 500
+
 class DeletePollution(Resource):
 
     @jwt_required()
@@ -110,4 +112,4 @@ class DeletePollution(Resource):
             return {"message": "PollutionDescription updated successfully"}, 200
         except Exception as e:
             db.session.rollback()  # Rollback changes in case of an error
-            return {"message": "An error occurred while updating pollution"}, 500
+            return {"message": f"An error occurred while updating pollution: {str(e)}"}, 500

@@ -1,14 +1,14 @@
 from flask_restful import Resource
-from model.geoarea import GeoArea
 from shapely.wkb import loads
 from shapely.geometry import mapping
+from model.geoarea import GeoArea
 
 class GeoAreas(Resource):
     def get(self):
         geoareas = GeoArea.query.all()
         return GeoAreas.json(geoareas)
-        
-    @staticmethod   
+
+    @staticmethod
     def json(_geoareas):
         json_data = []
         for geoarea in _geoareas:

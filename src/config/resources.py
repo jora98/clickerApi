@@ -1,13 +1,22 @@
+"""
+Resource setup for the API endpoints. Associates endpoints with their respective services.
+"""
+
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from service.geoarea_service import GeoAreas
-from service.pollution_service import Pollutions, PollutionCount, PollutionDescription, NewPollution, DeletePollution
+from service.pollution_service import (
+    Pollutions, PollutionCount, PollutionDescription, NewPollution, DeletePollution
+)
 from service.auth_service import Login
 from service.auth_service import Register
 
 def set_resources(_app):
+    """
+    Initializes API resources and adds them to the application.
+    """
     api = Api(_app)
-    jwt = JWTManager(_app)
+    JWTManager(_app)
 
     api.add_resource(GeoAreas, '/geoarea')
     api.add_resource(Pollutions, '/pollution/byGeoarea_fk/<geoarea_fk>')

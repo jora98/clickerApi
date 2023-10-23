@@ -12,5 +12,6 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(Utils.check_hashed_password(password, hashed_password))
         self.assertFalse(Utils.check_hashed_password("wrong_password", hashed_password))
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -7,7 +7,7 @@ from common.utils import Utils
 from common.database import db
 
 class Login(Resource):
-    
+
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, required=True)

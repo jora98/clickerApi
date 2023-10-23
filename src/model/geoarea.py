@@ -1,5 +1,8 @@
-from common.database import db
+"""
+This module defines the GeoArea model, representing geographic areas in the database.
+"""
 from geoalchemy2.types import Geometry
+from common.database import db
 
 class GeoArea(db.Model):
     __tablename__ = 'geoarea'
@@ -13,4 +16,3 @@ class GeoArea(db.Model):
     automaticsearch = db.Column(db.Boolean)
     name = db.Column(db.String(100))
     polygon = db.Column(Geometry(geometry_type='POLYGON'))
-
