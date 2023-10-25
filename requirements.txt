@@ -27,7 +27,7 @@ packaging==23.1
 passlib==1.7.4
 pipreqs==0.4.13
 platformdirs==3.11.0
-psycopg2==2.9.6
+psycopg2-binary==2.9.6
 pycodestyle==2.11.1
 pyflakes==3.1.0
 Pygments==2.16.1
