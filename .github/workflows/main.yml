@@ -10,7 +10,7 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: postgis/postgis:latest
           POSTGRES_PASSWORD: "!C0mplex"
           POSTGRES_DB: test
         ports:
