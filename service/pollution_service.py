@@ -101,7 +101,6 @@ class DeletePollution(Resource):
     @jwt_required()
     def delete(self, pollution_id: str):
         pollution = Pollution.query.get(pollution_id)
-        print(pollution)
 
         if not pollution:
             return {"message": "Pollution not found"}, 404
