@@ -8,9 +8,9 @@ jobs:
 
     services:
       postgres:
-        image: postgres:latest
+        image: postgis/postgis:latest
         env:
-          POSTGRES_USER: postgis/postgis:latest
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: "!C0mplex"
           POSTGRES_DB: test
         ports:
