@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  clickerdb:
+    image: postgis/postgis:13-3.1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "!C0mplex"
+      POSTGRES_DB: clicker
+
+  clickerapi:
+    build: .
+    environment:
+      FLASK_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      - clickerdb
