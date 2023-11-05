@@ -15,15 +15,14 @@ class Pollutions(Resource):
         for pollution in _pollution:
             json_item = {
                 'id': pollution.id,
-                'name': pollution.name,
                 'count': pollution.count,
                 'description': pollution.description,
-                'geoarea_fk': pollution.geoarea_fk
+                'geoarea_fk': pollution.geoarea_fk,
+                'pollution_type_fk': pollution.pollution_type_fk
             }
             json_data.append(json_item)
 
         return json_data
-
 class PollutionCount(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('count', type=int, required=True, help="Count field is required")
@@ -69,7 +68,8 @@ class PollutionDescription(Resource):
 
 class NewPollution(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str, required=True, help="Name field is required")
+    parser.add_argument('pollution_type_fk', type=str, required=True,
+                        help="Type field is required")
     parser.add_argument('description', type=str)
     parser.add_argument('count', type=int)
     parser.add_argument('geoarea_fk', type=int, required=True,
@@ -83,10 +83,10 @@ class NewPollution(Resource):
         if not geoarea:
             return {"message": "GeoArea not found"}, 404
 
-        pollution = Pollution(name=data['name'],
-                              count=data['count'],
+        pollution = Pollution(count=data['count'],
                               description=data['description'],
-                              geoarea_fk=data['geoarea_fk'])
+                              geoarea_fk=data['geoarea_fk'],
+                              pollution_type_fk=data['pollution_type_fk'])
 
         try:
             db.session.add(pollution)
