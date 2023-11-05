@@ -6,9 +6,11 @@ from app import create_app
 from common.database import db
 from model.geoarea import GeoArea
 from model.pollution import Pollution
+from model.pollutionType import PollutionType
 from config.database import TestConfig
 from datetime import datetime, timedelta
 from model.user import User
+import logging
 
 class TestAPIEndpoints(unittest.TestCase):
     def setUp(self):
@@ -113,20 +115,25 @@ class TestAPIEndpoints(unittest.TestCase):
             polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
+        pollutionType1 = PollutionType(
+            name='Typ 1',
+            id='123'
+        )
+
         pollution1 = Pollution(
-            name='Pollution 1',
             count=10,
             description='Description 1',
-            geoarea_fk=1
+            geoarea_fk=1,
+            pollution_type_fk='123'
         )
 
         pollution2 = Pollution(
-            name='Pollution 2',
             count=5,
             description='Description 2',
-            geoarea_fk=1
+            geoarea_fk=1,
+            pollution_type_fk='123'
         )
-        db.session.add_all([geoarea1, pollution1, pollution2])
+        db.session.add_all([geoarea1, pollutionType1, pollution1, pollution2])
         db.session.commit()
 
         with self.test_app.test_client() as client:
@@ -138,10 +145,10 @@ class TestAPIEndpoints(unittest.TestCase):
 
             self.assertEqual(len(response_data), 2)
 
-            self.assertEqual(response_data[0]['name'], 'Pollution 1')
+            self.assertEqual(response_data[0]['pollution_type_fk'], '123')
             self.assertEqual(response_data[0]['count'], 10)
             self.assertEqual(response_data[0]['description'], 'Description 1')
-            self.assertEqual(response_data[1]['name'], 'Pollution 2')
+            self.assertEqual(response_data[1]['pollution_type_fk'], '123')
             self.assertEqual(response_data[1]['count'], 5)
             self.assertEqual(response_data[1]['description'], 'Description 2')
 
@@ -158,13 +165,18 @@ class TestAPIEndpoints(unittest.TestCase):
             polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
-        pollution = Pollution(
-            name='PollutionDescription',
-            count=10,
-            description='Description',
-            geoarea_fk=4
+        pollutionType1 = PollutionType(
+            id='123',
+            name = '123'
         )
-        db.session.add_all([pollution, geoarea])
+
+        pollution = Pollution(
+            count=10,
+            description='Description 1',
+            geoarea_fk=1,
+            pollution_type_fk='123'
+        )
+        db.session.add_all([pollutionType1, pollution, geoarea])
         db.session.commit()
 
         expires = timedelta(days=7)
@@ -196,13 +208,18 @@ class TestAPIEndpoints(unittest.TestCase):
             polygon="POLYGON((1 2,2 3, 3 4, 5 6, 1 2))"
         )
 
-        pollution = Pollution(
-            name='PollutionDelete',
-            count=10,
-            description='Description',
-            geoarea_fk=5
+        pollutionType1 = PollutionType(
+            id=1,
+            name = '123'
         )
-        db.session.add_all([pollution, geoarea])
+
+        pollution = Pollution(
+            count=10,
+            description='Description 1',
+            geoarea_fk=1,
+            pollution_type_fk='123'
+        )
+        db.session.add_all([pollutionType1, pollution, geoarea])
         db.session.commit()
 
         expires = timedelta(days=7)

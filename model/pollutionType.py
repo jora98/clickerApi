@@ -8,3 +8,8 @@ class PollutionType(db.Model):
         db.String(36), primary_key=True, unique=True, nullable=False,
         default=lambda: uuid.uuid4().hex)
     name = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, name, id):  
+        self.name = name
+        if id:
+            self.id = id
