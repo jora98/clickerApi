@@ -7,7 +7,7 @@ from flask import Config
 
 class MainConfig(Config):
     """Configuration for the main environment."""
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:!C0mplex@localhost/clicker'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:!C0mplex@clickerdb:5432/clicker'
     JWT_SECRET_KEY = '123'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

@@ -9,7 +9,7 @@ class PollutionType(db.Model):
         default=lambda: uuid.uuid4().hex)
     name = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, name, id):  
+    def __init__(self, name, id=None):  
         self.name = name
         if id:
             self.id = id
